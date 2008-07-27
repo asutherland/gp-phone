@@ -1,0 +1,5 @@
+content	gpphone	content/
+locale	gpphone	en-US	locale/en-US/
+skin	gpphone	classic/1.0	skin/
+overlay	chrome://messenger/content/messenger.xul	chrome://gpphone/content/thunderbirdOverlay.xul
+resource gpphone ./
