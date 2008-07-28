@@ -88,17 +88,21 @@ PhoneNumber.prototype = {
    *  country already.  guess we could wrap this or not do it this way.
    */
   getCountryLowerBound: function () {
-    return new PhoneNumber(this.aCountryCode, 0, 0, 0);
+    return new PhoneNumber(this.countryCode, 0, 0, 0);
   },
   getCountryUpperBound: function () {
-    return new PhoneNumber(this.aCountryCode, this.areaCodeShifter-1,
+    return new PhoneNumber(this.countryCode, this.areaCodeShifter-1,
                            this.numberShifter-1, this.extensionShifter-1);
   },
   getAreaCodeLowerBound: function(aAreaCode) {
-    return new PhoneNumber(this.aCountryCode, aAreaCode, 0, 0);
+    if (!aAreaCode)
+      aAreaCode = this.areaCode;
+    return new PhoneNumber(this.countryCode, aAreaCode, 0, 0);
   },
   getAreaCodeUpperBound: function(aAreaCode) {
-    return new PhoneNumber(this.aCountryCode, aAreaCode, this.numberShifter-1,
+    if (!aAreaCode)
+      aAreaCode = this.areaCode;
+    return new PhoneNumber(this.countryCode, aAreaCode, this.numberShifter-1,
                            this.extensionShifter-1);
   },
   

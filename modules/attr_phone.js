@@ -84,11 +84,29 @@ let PhoneAttr = {
       explanation: "%{subject} mentions Phone Number %{object}", // localize-me
       });
     this._log.debug("defined attribute");
+    
+    Gloda.defineNounAction(Gloda.lookupNoun("phone-number"), {
+      actionType: "filter", actionTarget: Gloda.NOUN_MESSAGE,
+      shortName: "same number",
+      makeConstraint: function(aAttrDef, aPhoneNumber) {
+        return [PhoneAttr._attrPhone, null,
+                PhoneNoun.toAttributeValue(aPhoneNumber)];
+      },
+      });
+    Gloda.defineNounAction(Gloda.lookupNoun("phone-number"), {
+      actionType: "filter", actionTarget: Gloda.NOUN_MESSAGE,
+      shortName: "same area code",
+      makeConstraint: function(aAttrDef, aPhoneNumber) {
+        return [PhoneAttr._attrPhone, null,
+              PhoneNoun.toAttributeValue(aPhoneNumber.getAreaCodeLowerBound()),
+              PhoneNoun.toAttributeValue(aPhoneNumber.getAreaCodeUpperBound())];
+      },
+      });
   },
   
   process: function gp_phone_attr_process(aGlodaMessage, aMsgHdr, aMimeMsg) {
     let attrs = [];
-    this._log.debug("processing...");    
+    this._log.debug("processing...");
     if (aMimeMsg !== null) {
       this._log.debug("got mime body");
       let match;
