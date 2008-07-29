@@ -69,7 +69,6 @@ let PhoneAttr = {
   },
 
   defineAttributes: function() {
-    this._log.debug("defining attribute");
     this._attrPhone = Gloda.defineAttribute({
       provider: this,
       extensionName: EXT_NAME,
@@ -83,7 +82,6 @@ let PhoneAttr = {
       parameterNoun: null,
       explanation: "%{subject} mentions Phone Number %{object}", // localize-me
       });
-    this._log.debug("defined attribute");
     
     Gloda.defineNounAction(Gloda.lookupNoun("phone-number"), {
       actionType: "filter", actionTarget: Gloda.NOUN_MESSAGE,
@@ -106,12 +104,10 @@ let PhoneAttr = {
   
   process: function gp_phone_attr_process(aGlodaMessage, aMsgHdr, aMimeMsg) {
     let attrs = [];
-    this._log.debug("processing...");
+    let seenNumbers = {};
     if (aMimeMsg !== null) {
-      this._log.debug("got mime body");
       let match;
       while ((match = this._numberRegex.exec(aMimeMsg.body)) !== null) {
-        this._log.debug("MATCH: " + match);
         let countryCode = match[1] ? parseInt(match[1]) : 1;
         // so, in the past, you could omit the area code... so I guess let's
         //  support it, but just play dumb/impossible about it.
@@ -122,14 +118,14 @@ let PhoneAttr = {
         let phoneObj = new PhoneNumber(countryCode, areaCode, mainNumber,
                                        extension);
         
-        this._log.debug("got phone: " + phoneObj);
-        
-        attrs.push([this._attrPhone.id, PhoneNoun.toAttributeValue(phoneObj)]);
+        let numberStr = phoneObj.toString();
+        if (!(numberStr in seenNumbers)) {
+          seenNumbers[numberStr] = true;
+          attrs.push([this._attrPhone.id, PhoneNoun.toAttributeValue(phoneObj)]);
+        }
       }
     }
 
-    this._log.debug("returning attributes: " + attrs);
-    
     return attrs;
   },
 };
