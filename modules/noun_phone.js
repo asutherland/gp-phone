@@ -152,7 +152,7 @@ let PhoneNoun = {
   class: PhoneNumber,
   firstClass: false,
   
-  toAttributeValue: function gp_phone_noun_toAttributeValue(aPhoneNumber) {
+  toParamAndValue: function gp_phone_noun_toParamAndValue(aPhoneNumber) {
     let aValue = aPhoneNumber.countryCode;
     aValue *= aPhoneNumber.areaCodeShifter;
     aValue += aPhoneNumber.areaCode;
@@ -161,10 +161,11 @@ let PhoneNoun = {
     aValue *= aPhoneNumber.extensionShifter;
     aValue += aPhoneNumber.extension;
     
-    return aValue;
+    return [null, aValue];
   },
   
-  fromAttributeValue: function gp_phone_noun_fromAttributeValue(aAttrVal) {
+  fromParamAndValue: function gp_phone_noun_fromParamAndValue(aIgnoredParam,
+                                                              aAttrVal) {
     let value = aAttrVal;
     let countryCode = Math.floor(value / COUNTRY_ABS_SHIFT);
     // assuming the shifts are actually computed on the fly...

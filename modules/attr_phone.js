@@ -87,8 +87,8 @@ let PhoneAttr = {
       actionType: "filter", actionTarget: Gloda.NOUN_MESSAGE,
       shortName: "same number",
       makeConstraint: function(aAttrDef, aPhoneNumber) {
-        return [PhoneAttr._attrPhone, null,
-                PhoneNoun.toAttributeValue(aPhoneNumber)];
+        return [PhoneAttr._attrPhone].concat(
+                PhoneNoun.toParamAndValue(aPhoneNumber));
       },
       });
     Gloda.defineNounAction(Gloda.lookupNoun("phone-number"), {
@@ -96,8 +96,8 @@ let PhoneAttr = {
       shortName: "same area code",
       makeConstraint: function(aAttrDef, aPhoneNumber) {
         return [PhoneAttr._attrPhone, null,
-              PhoneNoun.toAttributeValue(aPhoneNumber.getAreaCodeLowerBound()),
-              PhoneNoun.toAttributeValue(aPhoneNumber.getAreaCodeUpperBound())];
+              PhoneNoun.toParamAndValue(aPhoneNumber.getAreaCodeLowerBound())[1],
+              PhoneNoun.toParamAndValue(aPhoneNumber.getAreaCodeUpperBound())[1]];
       },
       });
   },
@@ -121,7 +121,8 @@ let PhoneAttr = {
         let numberStr = phoneObj.toString();
         if (!(numberStr in seenNumbers)) {
           seenNumbers[numberStr] = true;
-          attrs.push([this._attrPhone.id, PhoneNoun.toAttributeValue(phoneObj)]);
+          attrs.push([this._attrPhone.id,
+                      PhoneNoun.toParamAndValue(phoneObj)[1]]);
         }
       }
     }
