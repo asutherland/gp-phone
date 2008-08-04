@@ -60,10 +60,10 @@ let PhoneAttr = {
   init: function() {
     this._log =  Log4Moz.Service.getLogger("gpphone.attr_phone");
     this._numberRegex = new RegExp(
-      "(?:(?:\\+?(\\d{1,3})[- .]?)?" + // country code, delimiter...
+      "\\b(?:(?:\\+?(\\d{1,3})[- .])?" + // country code, delimiter...
          "\\(?(\\d{3})[-./)]? {0,2})?" + // area code, delimeter...
       "([2-9][0-9]{2})[-. ]([0-9]{4})" + // phone number proper
-      "(?:(?: {1,2}|[xX]|(?:[eE][xX][tT]\\.?)){1,2}(\\d{1,6}))?", // extension
+      "(?:(?: {1,2}|[xX]|(?:[eE][xX][tT]\\.?)){1,2}(\\d{1,6}))?\\b", // extension
       "g");
     this.defineAttributes();
   },
