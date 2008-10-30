@@ -150,7 +150,7 @@ const COUNTRY_ABS_SHIFT = 10000000000000000;
 let PhoneNoun = {
   name: "phone-number",
   class: PhoneNumber,
-  firstClass: false,
+  allowsArbitraryAttrs: false,
   
   toParamAndValue: function gp_phone_noun_toParamAndValue(aPhoneNumber) {
     let aValue = aPhoneNumber.countryCode;

@@ -57,7 +57,7 @@ let PhoneAttr = {
   _log: null,
   _numberRegex: null,
 
-  init: function() {
+  init: function PhoneAttr_init() {
     this._log =  Log4Moz.Service.getLogger("gpphone.attr_phone");
     this._numberRegex = new RegExp(
       "\\b(?:(?:\\+?(\\d{1,3})[- .])?" + // country code, delimiter...
@@ -68,19 +68,17 @@ let PhoneAttr = {
     this.defineAttributes();
   },
 
-  defineAttributes: function() {
+  defineAttributes: function PhoneAttr_defineAttributes() {
     this._attrPhone = Gloda.defineAttribute({
       provider: this,
       extensionName: EXT_NAME,
       attributeType: Gloda.kAttrDerived,
       attributeName: "phoneNumber",
-      bind: true,
       bindName: "phoneNumbers",
       singular: false,
       subjectNouns: [Gloda.NOUN_MESSAGE],
       objectNoun: Gloda.lookupNoun("phone-number"),
       parameterNoun: null,
-      explanation: "%{subject} mentions Phone Number %{object}", // localize-me
       });
     
     Gloda.defineNounAction(Gloda.lookupNoun("phone-number"), {
@@ -102,9 +100,11 @@ let PhoneAttr = {
       });
   },
   
-  process: function gp_phone_attr_process(aGlodaMessage, aMsgHdr, aMimeMsg) {
-    let attrs = [];
+  process: function gp_phone_attr_process(aGlodaMessage, aRaw, aIsNew,
+                                          aCallbackHandler) {
+    let aMimeMsg = aRaw.mime;
     let seenNumbers = {};
+    let phoneNumbers = [];
     if (aMimeMsg !== null) {
       let match;
       while ((match = this._numberRegex.exec(aMimeMsg.body)) !== null) {
@@ -121,13 +121,15 @@ let PhoneAttr = {
         let numberStr = phoneObj.toString();
         if (!(numberStr in seenNumbers)) {
           seenNumbers[numberStr] = true;
-          attrs.push([this._attrPhone.id,
-                      PhoneNoun.toParamAndValue(phoneObj)[1]]);
+          phoneNumbers.push(phoneObj);
         }
       }
     }
+    
+    if (phoneNumbers.length)
+      aGlodaMessage.phoneNumbers = phoneNumbers;
 
-    return attrs;
+    yield Gloda.kWorkDone;
   },
 };
 
