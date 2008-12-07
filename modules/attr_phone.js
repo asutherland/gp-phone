@@ -56,7 +56,7 @@ let PhoneAttr = {
   _numberRegex: null,
 
   init: function PhoneAttr_init() {
-    this._log =  Log4Moz.Service.getLogger("gpphone.attr_phone");
+    this._log =  Log4Moz.repository.getLogger("gpphone.attr_phone");
     this._numberRegex = new RegExp(
       "\\b(?:(?:\\+?(\\d{1,3})[- .])?" + // country code, delimiter...
          "\\(?(\\d{3})[-./)]? {0,2})?" + // area code, delimeter...
