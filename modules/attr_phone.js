@@ -5,7 +5,7 @@
  * 1.1 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  * http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  * for the specific language governing rights and limitations under the
@@ -32,7 +32,7 @@
  * and other provisions required by the GPL or the LGPL. If you do not delete
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
- * 
+ *
  * ***** END LICENSE BLOCK ***** */
 
 EXPORTED_SYMBOLS = [''];
@@ -43,7 +43,9 @@ const Cr = Components.results;
 const Cu = Components.utils;
 
 Cu.import("resource://app/modules/gloda/log4moz.js");
-Cu.import("resource://app/modules/gloda/public.js")
+Cu.import("resource://app/modules/StringBundle.js");
+
+Cu.import("resource://app/modules/gloda/public.js");
 
 Cu.import("resource://gpphone/modules/noun_phone.js");
 
@@ -52,6 +54,7 @@ const EXT_NAME = "gp-phone";
 
 let PhoneAttr = {
   providerName: EXT_NAME,
+  strings: new StringBundle("chrome://gpphone/locale/gpphone.properties"),
   _log: null,
   _numberRegex: null,
 
@@ -74,11 +77,12 @@ let PhoneAttr = {
       attributeName: "phoneNumber",
       bindName: "phoneNumbers",
       singular: false,
+      facet: true,
       subjectNouns: [Gloda.NOUN_MESSAGE],
       objectNoun: Gloda.lookupNoun("phone-number"),
       parameterNoun: null,
       });
-    
+
     Gloda.defineNounAction(Gloda.lookupNoun("phone-number"), {
       actionType: "filter", actionTarget: Gloda.NOUN_MESSAGE,
       shortName: "same number",
@@ -97,7 +101,7 @@ let PhoneAttr = {
       },
       });
   },
-  
+
   process: function gp_phone_attr_process(aGlodaMessage, aRaw, aIsNew,
                                           aCallbackHandler) {
     let aMimeMsg = aRaw.mime;
@@ -109,13 +113,13 @@ let PhoneAttr = {
         let countryCode = match[1] ? parseInt(match[1]) : 1;
         // so, in the past, you could omit the area code... so I guess let's
         //  support it, but just play dumb/impossible about it.
-        let areaCode = match[2] ? parseInt(match[2]) : 0; 
+        let areaCode = match[2] ? parseInt(match[2]) : 0;
         let mainNumber = parseInt(match[3] + match[4]);
         let extension = match[5] ? parseInt(match[5]) : 0;
-        
+
         let phoneObj = new PhoneNumber(countryCode, areaCode, mainNumber,
                                        extension);
-        
+
         let numberStr = phoneObj.toString();
         if (!(numberStr in seenNumbers)) {
           seenNumbers[numberStr] = true;
@@ -123,7 +127,7 @@ let PhoneAttr = {
         }
       }
     }
-    
+
     if (phoneNumbers.length)
       aGlodaMessage.phoneNumbers = phoneNumbers;
 

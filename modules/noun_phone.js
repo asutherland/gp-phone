@@ -5,7 +5,7 @@
  * 1.1 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  * http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  * for the specific language governing rights and limitations under the
@@ -32,7 +32,7 @@
  * and other provisions required by the GPL or the LGPL. If you do not delete
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
- * 
+ *
  * ***** END LICENSE BLOCK ***** */
 
 EXPORTED_SYMBOLS = ['PhoneNumber', 'PhoneNoun'];
@@ -43,7 +43,7 @@ const Cr = Components.results;
 const Cu = Components.utils;
 
 Cu.import("resource://app/modules/gloda/log4moz.js");
-Cu.import("resource://app/modules/gloda/public.js")
+Cu.import("resource://app/modules/gloda/public.js");
 
 /**
  * A phone number!  We're sorta trying to support phone numbers in multiple
@@ -82,7 +82,7 @@ PhoneNumber.prototype = {
   /* where do we split the number... assuming NANP formatting here. */
   numberSplit: 4, // from the right
   numberSplitShifter: 10000,
-  
+
   /* helper ops.  given our extension plan, you need a PhoneNumber in the
    *  country already.  guess we could wrap this or not do it this way.
    */
@@ -104,7 +104,7 @@ PhoneNumber.prototype = {
     return new PhoneNumber(this.countryCode, aAreaCode, this.numberShifter-1,
                            this.extensionShifter-1);
   },
-  
+
   toString: function () {
     // we allow the area code to be zero when missing, so we need to zero-pad it
     //  too (or just special case zero, I suppose)
@@ -112,15 +112,15 @@ PhoneNumber.prototype = {
     // legal numbers don't need zero-padding, but for cutters-and-pasters...
     let numHigh = "" + Math.floor(this.number / this.numberSplitShifter);
     let numLow = "" + (this.number % this.numberSplitShifter);
-    
+
     let extensionStr;
     // we don't allow 0 as an extension or allow required zero padding.
     // luckily, PBX/historical constraints are on our side
     if (this.extension != 0)
-      extensionStr = " x" + this.extension; 
+      extensionStr = " x" + this.extension;
     else
       extensionStr = "";
-    
+
     return "+" + this.countryCode + " " +
            ZEROES.substring(0, 3 - area.length) + area + "-" +
            ZEROES.substring(0, 3 - numHigh.length) + numHigh + "-" +
@@ -132,7 +132,7 @@ PhoneNumber.prototype = {
 const COUNTRY_ABS_SHIFT = 10000000000000000;
 
 /**
- * 
+ *
  *
  * Encoding:
  *
@@ -148,9 +148,24 @@ const COUNTRY_ABS_SHIFT = 10000000000000000;
  */
 let PhoneNoun = {
   name: "phone-number",
-  class: PhoneNumber,
+  clazz: PhoneNumber,
   allowsArbitraryAttrs: false,
-  
+
+  comparator: function gp_phone_noun_comparator(a, b) {
+    if (a == null) {
+      if (b == null)
+        return 0;
+      else
+        return 1;
+    }
+    else if (b == null) {
+      return -1;
+    }
+    let aValue = PhoneNoun.toParamAndValue(a)[0];
+    let bValue = PhoneNoun.toParamAndValue(b)[0];
+    return a - b;
+  },
+
   toParamAndValue: function gp_phone_noun_toParamAndValue(aPhoneNumber) {
     let aValue = aPhoneNumber.countryCode;
     aValue *= aPhoneNumber.areaCodeShifter;
@@ -159,10 +174,10 @@ let PhoneNoun = {
     aValue += aPhoneNumber.number;
     aValue *= aPhoneNumber.extensionShifter;
     aValue += aPhoneNumber.extension;
-    
+
     return [null, aValue];
   },
-  
+
   fromParamAndValue: function gp_phone_noun_fromParamAndValue(aIgnoredParam,
                                                               aAttrVal) {
     let value = aAttrVal;
@@ -176,7 +191,7 @@ let PhoneNoun = {
     phoneNumber.number = Math.floor(value / numberShift) %
                          phoneNumber.numberShifter;
     phoneNumber.extension = value % phoneNumber.extensionShifter;
-     
+
     return phoneNumber;
   },
 };
